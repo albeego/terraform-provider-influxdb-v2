@@ -1,7 +1,7 @@
 terraform {
   required_providers {
     influxdb-v2 = {
-      source = "lancey-energy-storage/influxdb-v2"
+      source = "albeego/influxdb-v2"
       version = "0.1.0"
     }
   }

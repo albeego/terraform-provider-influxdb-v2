@@ -1,4 +1,4 @@
-module github.com/lancey-energy-storage/terraform-provider-influxdb-v2
+module github.com/albeego/terraform-provider-influxdb-v2
 
 go 1.14
 
