@@ -6,6 +6,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/influxdata/influxdb-client-go/v2"
 	"github.com/influxdata/influxdb-client-go/v2/domain"
+	"log"
 )
 
 func ResourceAuthorization() *schema.Resource {
@@ -83,6 +84,7 @@ func ResourceAuthorization() *schema.Resource {
 func resourceAuthorizationCreate(d *schema.ResourceData, meta interface{}) error {
 	influx := meta.(influxdb2.Client)
 	permissions, err := getPermissions(d.Get("permissions"))
+	log.Printf("[DEBUG] permissions %v", permissions)
 	if err != nil {
 		return fmt.Errorf("error getting permissions: %v", err)
 	}
