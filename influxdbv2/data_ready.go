@@ -6,6 +6,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/influxdata/influxdb-client-go/v2"
 	"log"
+	"time"
 )
 
 func DataReady() *schema.Resource {
@@ -22,11 +23,11 @@ func DataReady() *schema.Resource {
 
 func DataGetReady(d *schema.ResourceData, meta interface{}) error {
 	influx := meta.(influxdb2.Client)
-	bool, err := influx.Ready(context.Background())
+	ready, err := influx.Ready(context.Background())
 	if err != nil {
 		return fmt.Errorf("server is not ready: %v", err)
 	}
-	if bool {
+	if ready.Started.Before(time.Now()) {
 		log.Printf("Server is ready !")
 	}
 
