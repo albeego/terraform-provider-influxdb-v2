@@ -1,6 +1,6 @@
 module github.com/albeego/terraform-provider-influxdb-v2
 
-go 1.14
+go 1.18
 
 require (
 	github.com/agext/levenshtein v1.2.3 // indirect
