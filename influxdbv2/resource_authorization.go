@@ -90,22 +90,43 @@ func (r *AuthorizationResource) Schema(ctx context.Context, req resource.SchemaR
 				Computed:    true,
 				Default:     stringdefault.StaticString("active"),
 			},
-			"permissions": schema.SetNestedAttribute{
-				Description:   "List of permissions for the authorization.",
-				Required:      true,
-				PlanModifiers: []planmodifier.Set{
-					// Permissions cannot be updated once created
+			"user_id": schema.StringAttribute{
+				Description: "The user ID associated with the authorization.",
+				Computed:    true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
 				},
-				NestedObject: schema.NestedAttributeObject{
+			},
+			"user_org_id": schema.StringAttribute{
+				Description: "The organization ID of the user.",
+				Computed:    true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+				},
+			},
+			"token": schema.StringAttribute{
+				Description: "The authorization token. This is sensitive and should be stored securely.",
+				Computed:    true,
+				Sensitive:   true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+				},
+			},
+		},
+		Blocks: map[string]schema.Block{
+			"permissions": schema.SetNestedBlock{
+				Description: "List of permissions for the authorization.",
+				NestedObject: schema.NestedBlockObject{
 					Attributes: map[string]schema.Attribute{
 						"action": schema.StringAttribute{
 							Description: "Permission action (e.g., 'read', 'write').",
 							Required:    true,
 						},
-						"resource": schema.SetNestedAttribute{
+					},
+					Blocks: map[string]schema.Block{
+						"resource": schema.SetNestedBlock{
 							Description: "Resources the permission applies to.",
-							Required:    true,
-							NestedObject: schema.NestedAttributeObject{
+							NestedObject: schema.NestedBlockObject{
 								Attributes: map[string]schema.Attribute{
 									"id": schema.StringAttribute{
 										Description: "Resource ID.",
@@ -129,28 +150,6 @@ func (r *AuthorizationResource) Schema(ctx context.Context, req resource.SchemaR
 							},
 						},
 					},
-				},
-			},
-			"user_id": schema.StringAttribute{
-				Description: "The user ID associated with the authorization.",
-				Computed:    true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
-				},
-			},
-			"user_org_id": schema.StringAttribute{
-				Description: "The organization ID of the user.",
-				Computed:    true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
-				},
-			},
-			"token": schema.StringAttribute{
-				Description: "The authorization token. This is sensitive and should be stored securely.",
-				Computed:    true,
-				Sensitive:   true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
 				},
 			},
 		},

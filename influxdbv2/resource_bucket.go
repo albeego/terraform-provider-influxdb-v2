@@ -82,27 +82,6 @@ func (r *BucketResource) Schema(ctx context.Context, req resource.SchemaRequest,
 					stringplanmodifier.RequiresReplace(),
 				},
 			},
-			"retention_rules": schema.SetNestedAttribute{
-				Description: "Retention rules for the bucket.",
-				Required:    true,
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"every_seconds": schema.Int64Attribute{
-							Description: "Duration in seconds for how long data will be kept in the database.",
-							Required:    true,
-							PlanModifiers: []planmodifier.Int64{
-								int64planmodifier.UseStateForUnknown(),
-							},
-						},
-						"type": schema.StringAttribute{
-							Description: "Type of retention rule. Defaults to 'expire'.",
-							Optional:    true,
-							Computed:    true,
-							Default:     stringdefault.StaticString("expire"),
-						},
-					},
-				},
-			},
 			"rp": schema.StringAttribute{
 				Description: "The retention policy name.",
 				Optional:    true,
@@ -125,6 +104,28 @@ func (r *BucketResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Computed:    true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
+				},
+			},
+		},
+		Blocks: map[string]schema.Block{
+			"retention_rules": schema.SetNestedBlock{
+				Description: "Retention rules for the bucket.",
+				NestedObject: schema.NestedBlockObject{
+					Attributes: map[string]schema.Attribute{
+						"every_seconds": schema.Int64Attribute{
+							Description: "Duration in seconds for how long data will be kept in the database.",
+							Required:    true,
+							PlanModifiers: []planmodifier.Int64{
+								int64planmodifier.UseStateForUnknown(),
+							},
+						},
+						"type": schema.StringAttribute{
+							Description: "Type of retention rule. Defaults to 'expire'.",
+							Optional:    true,
+							Computed:    true,
+							Default:     stringdefault.StaticString("expire"),
+						},
+					},
 				},
 			},
 		},
