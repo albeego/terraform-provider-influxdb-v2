@@ -3,10 +3,11 @@ package influxdbv2
 import (
 	"context"
 	"fmt"
+	"log"
+
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/influxdata/influxdb-client-go/v2"
 	"github.com/influxdata/influxdb-client-go/v2/domain"
-	"log"
 )
 
 func ResourceAuthorization() *schema.Resource {
