@@ -64,4 +64,4 @@ release:
     name: terraform-provider-influxdb-v2
 
 changelog:
-  skip: true
+  disable: true
