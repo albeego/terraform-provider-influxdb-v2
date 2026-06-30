@@ -327,8 +327,15 @@ func (r *AuthorizationResource) ImportState(ctx context.Context, req resource.Im
 
 // Helper function to read authorization and populate the model
 func (r *AuthorizationResource) readAuthorization(ctx context.Context, model *AuthorizationResourceModel) error {
-	// Find all authorizations for the org
-	authorizations, err := r.client.AuthorizationsAPI().FindAuthorizationsByOrgID(ctx, model.OrgID.ValueString())
+	var authorizations *[]domain.Authorization
+	var err error
+
+	// Filter by user ID when available to avoid fetching all org authorizations
+	if !model.UserID.IsNull() && !model.UserID.IsUnknown() && model.UserID.ValueString() != "" {
+		authorizations, err = r.client.AuthorizationsAPI().FindAuthorizationsByUserID(ctx, model.UserID.ValueString())
+	} else {
+		authorizations, err = r.client.AuthorizationsAPI().FindAuthorizationsByOrgID(ctx, model.OrgID.ValueString())
+	}
 	if err != nil {
 		return fmt.Errorf("error finding authorizations: %w", err)
 	}
