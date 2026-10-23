@@ -19,6 +19,19 @@ jobs:
         with:
           go-version-file: go.mod
 
+      # Before the InfluxDB steps, so a failing acceptance test cannot hide a
+      # finding. Reachability-based, and it covers the Go standard library as well as
+      # modules. That stdlib coverage is the point: this module sat on go 1.24.0
+      # and carried 20+ reachable stdlib findings with nothing to report them.
+      - name: Vulnerability scan
+        run: |
+          # govulncheck must be built with a toolchain at least as new as the
+          # module's, or it refuses the analysis. `go install pkg@latest`
+          # resolves govulncheck's own go directive, not ours, so pin it.
+          GOTOOLCHAIN="go$(go env GOVERSION | sed 's/^go//')" \
+            go install golang.org/x/vuln/cmd/govulncheck@latest
+          "$(go env GOPATH)/bin/govulncheck" ./...
+
       - name: Setup influxdb
         run: |
           source ./scripts/setup_influxdb.sh
@@ -35,15 +48,3 @@ jobs:
 
       - name: Run acceptance tests
         run: make testacc
-
-      # Reachability-based, and it covers the Go standard library as well as
-      # modules. That stdlib coverage is the point: this module sat on go 1.24.0
-      # and carried 20+ reachable stdlib findings with nothing to report them.
-      - name: Vulnerability scan
-        run: |
-          # govulncheck must be built with a toolchain at least as new as the
-          # module's, or it refuses the analysis. `go install pkg@latest`
-          # resolves govulncheck's own go directive, not ours, so pin it.
-          GOTOOLCHAIN="go$(go env GOVERSION | sed 's/^go//')" \
-            go install golang.org/x/vuln/cmd/govulncheck@latest
-          "$(go env GOPATH)/bin/govulncheck" ./...
